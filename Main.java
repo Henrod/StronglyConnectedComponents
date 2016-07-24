@@ -9,35 +9,23 @@ class Main {
 		/* Number of edges in Graph */
 		int M = sc.nextInt();
 
-		/* Vertices from 1 to N */
-		List<Vertex> vertices = new ArrayList<Vertex>(N);
-		for (int i = 0; i < N; i++) {
-			vertices.add(new Vertex(i + 1));
-		}
-
-		/* Empty adjency list for each vertex */
-		HashMap<Vertex, List<Vertex>> adj = new HashMap<>(M);
-		for (Vertex v : vertices) {
-			adj.put(v, new LinkedList<Vertex>());
-		}
-
-		/* Adjency list: source and destination */
+		List<Edge> edges = new LinkedList<>();
 		for (int i = 0; i < M; i++) {
-			Vertex src = vertices.get(sc.nextInt() - 1);
-			Vertex dst = vertices.get(sc.nextInt() - 1);
-			adj.get(src).add(dst);
+			Edge edge = new Edge();
+			edge.u = sc.nextInt() - 1;
+			edge.v = sc.nextInt() - 1;
+			edges.add(edge);
 		}
 
-		Graph graph = new Graph(vertices, adj);
+		Graph graph = new Graph(N, edges);
+		List<List<Vertex>> scc = StronglyConnectedComponents.compute(graph);
 
-		List<List<Vertex>> scc = graph.stronglyConnectedComponents();
-		int i = 1;
-		for (List<Vertex> list : scc) {
+		for (int i = 1; i <= scc.size(); i++) {
+			List<Vertex> list = scc.get(i - 1);
 			System.out.print("Component " + i + ": ");
 			for (Vertex v : list)
-				System.out.print(v.index + " ");
+				System.out.print(v.toString());
 			System.out.println("");
-			i += 1;
 		}
 	}
 }
