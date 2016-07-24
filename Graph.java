@@ -3,6 +3,7 @@ import java.util.*;
 class Graph {
 	List<Vertex> vertices;
 	HashMap<Vertex, List<Vertex>> adj;
+	HashMap<Vertex, List<Vertex>> adjT;
 
 	public Graph (int N, List<Edge> edges) {
 		/* Vertices from 1 to N */
@@ -13,8 +14,10 @@ class Graph {
 
 		/* Empty adjency list for each vertex */
 		adj = new HashMap<>();
+		adjT = new HashMap<>();
 		for (Vertex v : vertices) {
 			adj.put(v, new LinkedList<Vertex>());
+			adjT.put(v, new LinkedList<Vertex>());
 		}
 
 		/* Adjency list: source and destination */
@@ -22,6 +25,7 @@ class Graph {
 			Vertex src = vertices.get(e.u);
 			Vertex dst = vertices.get(e.v);
 			adj.get(src).add(dst);
+			adjT.get(dst).add(src);
 		}
 	}
 }

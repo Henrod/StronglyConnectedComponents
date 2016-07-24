@@ -1,27 +1,52 @@
 import java.util.*;
 
 class StronglyConnectedComponents {
-	private static void visit (Vertex v, LinkedList<Vertex> ordered_vertices, Graph graph) {
-		v.visited = true;
+	private static void visit (Vertex s, LinkedList<Vertex> ordered_vertices, Graph graph) {
+		boolean[] inside = new boolean[Main.N];
+		Stack stack = new Stack(Main.N);
+		stack.push(s);
 
-		for (Vertex u : graph.adj.get(v)) {
-			if (!u.visited) {
-				u.parent = v;
-				visit(u, ordered_vertices, graph);
+		loop:
+		while (!stack.isEmpty()) {
+			Vertex v = stack.pop();
+			v.visited = true;
+
+			for (Vertex u : graph.adj.get(v)) {
+				if (!u.visited) {
+					u.parent = v;
+					stack.push(v);
+					stack.push(u);
+					continue loop;
+				}
+			}
+			if (!inside[v.index - 1]) {
+				ordered_vertices.addFirst(v);
+				inside[v.index - 1] = true;
 			}
 		}
-		ordered_vertices.addFirst(v);
 	}
 
-	private static void visit_scc (Vertex v, LinkedList<List<Vertex>> scc, HashMap<Vertex, List<Vertex>> adjGt) {
-		v.visited = true;
+	private static void visit_scc (Vertex s, LinkedList<List<Vertex>> scc, Graph graph) {
+		boolean[] inside = new boolean[Main.N];
+		Stack stack = new Stack(Main.N);
+		stack.push(s);
 
-		for (Vertex u : adjGt.get(v)) {
-			if (!u.visited) {
-				visit_scc(u, scc, adjGt);
+		loop:
+		while (!stack.isEmpty()) {
+			Vertex v = stack.pop();
+			v.visited = true;
+			for (Vertex u : graph.adjT.get(v)) {
+				if (!u.visited) {
+					stack.push(v);
+					stack.push(u);
+					continue loop;
+				}
+			}
+			if (!inside[v.index - 1]) {
+				scc.getLast().add(v);
+				inside[v.index - 1] = true;
 			}
 		}
-		scc.getLast().add(v);
 	}
 
 	public static List<List<Vertex>> compute(Graph graph) {
@@ -40,21 +65,14 @@ class StronglyConnectedComponents {
 			}
 		}
 
-		HashMap<Vertex, List<Vertex>> adjGt = new HashMap<>();
 		for (Vertex v : graph.vertices) {
 			v.visited = false;
-			adjGt.put(v, new LinkedList<Vertex>());
-		}
-		for (Vertex v : graph.adj.keySet()) {
-			for (Vertex u : graph.adj.get(v)) {
-				adjGt.get(u).add(v);
-			}
 		}
 
 		for (Vertex v : ordered_vertices) {
 			if (!v.visited) {
 				scc.add(new LinkedList<Vertex>());
-				visit_scc(v, scc, adjGt);
+				visit_scc(v, scc, graph);
 			}
 		}
 
